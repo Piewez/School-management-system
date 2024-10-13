@@ -1,0 +1,36 @@
+<h1>Enregistrer le Comportement de {{ student }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="aspect">Aspect:</label>
+    <select name="aspect">
+        <option value="retard">Retard</option>
+        <option value="absence">Absence</option>
+        <option value="participation">Participation en classe</option>
+        <option value="qualite_travail">Qualité du travail</option>
+        <option value="engagement">Engagement</option>
+        <option value="proprete">Propreté du matériel</option>
+        <option value="respect_regles">Respect des règles</option>
+    </select>
+    <label for="points">Points:</label>
+    <input type="number" name="points" min="0" required>
+    <label for="periode">Période:</label>
+    <input type="text" name="periode" required>
+    <button type="submit">Enregistrer</button>
+</form>
+
+
+<h1>Ajouter un Comportement pour {{ student }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="aspect">Aspect:</label>
+    <select name="aspect">
+        <option value="retard">Retard</option>
+        <option value="absence">Absence</option>
+        <option value="participation">Participation en classe</option>
+        <option value="qualite_travail">Qualité du travail</option>
+        <option value="engagement">Engagement</option>
+        <option value="proprete">Propreté du matériel</option>
+        <option value="respect_regles">Respect des règles</option>
+    </select>
+    <button type="submit">Ajouter</button>
+</form>

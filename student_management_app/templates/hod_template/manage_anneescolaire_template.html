@@ -1,0 +1,58 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Manage Classe
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+
+           <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Liste des Années Scolaire</h3>
+
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Année Scolaire</th>
+                      <th>Début</th>
+                      <th>Fin</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for anneescolaire in anneescolaires %}
+                    <tr>
+                      <td>{{ anneescolaire.id }}</td>
+                      <td>{{ anneescolaire.nom }}</td>
+                      <td>{{ anneescolaire.session_start_year }}</td>
+                      <td>{{ anneescolaire.session_end_year }}</td>
+                      {% if anneescolaire.is_complete %}
+                      <td ><small class='badge badge-danger'> Fini </small></td>
+                      {% else %}
+                      <td ><small class='badge badge-success'>En cours </small></td>
+                      {% endif %}
+                      <td><a href="/edit_anneescolaire/{{ anneescolaire.id }}" class="btn btn-success">Edit</a></td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+

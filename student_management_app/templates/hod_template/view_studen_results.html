@@ -1,0 +1,235 @@
+
+{% extends 'hod_template/base_template.html' %}
+{% load custom_filters %}
+{% block page_title %}
+Resultat de l'élève {{ eleve.admin.first_name }} {{ eleve.admin.last_name }}
+{% endblock page_title %}
+{% block main_content %}
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="form-group">
+        {% if messages %}
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+          <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+          {% endif %}
+          {% if message.tags == 'success' %}
+          <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+          {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+        <div class="form-group">
+            <script>
+                {% if messages %}
+                  {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                    toastr.error("{{ message }}");
+                    {% endif %}
+                    {% if message.tags == 'success' %}
+                    toastr.success("{{ message }}");
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+            </script>
+        </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Résultats de {{ eleve.admin.first_name }} {{ eleve.admin.last_name }} </h3>
+            </div>
+            <div class="card-body">
+                <form method="get" action="" enctype="multipart/form-data" role="form">
+                    
+                    <div class="row">
+                      <div class="col-sm-3">
+                        <div class="form-group">
+                          <label for="id_classe">Nom : </label>
+                          {{ eleve.admin.first_name }} 
+                        </div>
+                      </div>
+                      <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="trimestre">Prénom : </label>
+                            {{ eleve.admin.last_name }}
+                        </div>
+                      </div>
+                      <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="trimestre">Classe : </label>
+                            {{ classe.classe_name }}
+                        </div>
+                      </div>
+                      <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="trimestre">Sexe : </label>
+                            {{ eleve.gender}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                          <div class="form-group">
+                            <h4>Moyenne : {{ moyenne_trimestre }} </h4>
+                            
+                          </div>
+                        </div>
+                        <div class="col-sm-3">
+                          <div class="form-group">
+                              <h4>Rang : 
+                                        {% if rang_trimestre %}
+                                            {% if rang_trimestre == 1 and eleve.gender == 'M' %}
+                                                {{ rang_trimestre }}er
+                                            {% elif rang_trimestre == 1 and eleve.gender == 'F' %}
+                                                {{ rang_trimestre }}ère
+                                            {% else %}
+                                                {{ rang_trimestre }}ème
+                                            {% endif %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
+                              </h4>
+                          </div>
+                        </div>
+                        <div class="col-sm-3">
+                          <form action="{% url 'generate_bulletin_pdf' trimestre.id eleve.id %}" method="get">
+                            <button type="submit"></button>
+                        </form>
+                        <form action="{% url 'generate_bulletin_pdf' trimestre.id eleve.id %}" method="get" class="form-inline float-right">
+                            <button class="btn btn-primary" type="submit">Imprimer Le bulletin</button>
+                        </form>
+                                               
+                                                
+                        </div>
+                        
+                      </div>
+                </form>
+
+                    <!-- Section des matières avec des notes existantes -->
+                  <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="matieres_existantes">N° Matricule : {{ eleve.numero_matricule }}</label>
+                            <div>
+                              <img src="{{ eleve.profile_pic }}" style=" width:100px; "/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="matieres_existantes">Statistiques</label>
+                            <div class="">
+                                <div class="form-check-label">
+                                  Moyenne la plus élevée de la classe: <strong>{{ moyenne_max|floatformat:"2" }} </strong>
+                                </div>
+                                <div class="form-check-label">
+                                  Moyenne la plus faible de la classe: <strong>{{ moyenne_min|floatformat:"2" }}</strong>
+                                </div>
+                                <div class="form-check-label">
+                                  Moyenne générale de la classe: <strong>{{ moyenne_generale|floatformat:"2" }}</strong>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                          <div class="form-group">
+                              <label for="matieres_existantes">Moyennes par catégorie</label>
+                              <ul>
+                                {% for categorie, moyenne in moyennes_par_categorie.items %}
+                                    <li>{{ categorie }}: {{ moyenne|floatformat:"2" }}</li>
+                                {% endfor %}
+                            </ul>
+                          </div>
+                       
+                     </div>
+                    </div>
+                    <hr>
+                    
+                    
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Matière</th>
+                                    <th>Évaluation classe</th>
+                                    <th>Devoir</th>
+                                    <th>Composition</th>
+                                    <th>Moyenne Note</th> 
+                                    <th>Coefficient</th>
+                                    <th>Moyenne Pondérée</th>
+                                    <th>Rang</th>
+                                    <th>Observation</th>
+                                    <th>Prof chargé</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               
+                                {% for note in notes %}
+                                <tr>
+                                    <td>{{ note.matiere.matiere_name }}</td>
+                                    <td>{{ note.evaluation_classe }}</td>
+                                    <td>{{ note.devoir }}</td>
+                                    <td>{{ note.composition }}</td>
+                                    <td>{{ note.moyenne_note|floatformat:"2" }}</td> 
+                                    <td>{{ note.coefficient }}</td>
+                                    <td>{{ note.moyenne_ponderee|floatformat:"2" }}</td>
+                                    <td>
+                                        {% if note.rang_matiere %}
+                                            {% if note.rang_matiere == 1 and eleve.gender == 'M' %}
+                                                {{ note.rang_matiere }}er
+                                            {% elif note.rang_matiere == 1 and eleve.gender == 'F' %}
+                                                {{ note.rang_matiere }}ère
+                                            {% else %}
+                                                {{ note.rang_matiere }}ème
+                                            {% endif %}
+                                        {% else %}
+                                            None
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if note.moyenne_note <= 5 %}
+                                            FAIBLE
+                                        {% elif 5 < note.moyenne_note and note.moyenne_note < 9 %}
+                                            INSUFFISANT
+                                        {% elif 9 <= note.moyenne_note and note.moyenne_note < 12 %}
+                                            PASSABLE
+                                        {% elif 12 <= note.moyenne_note and note.moyenne_note < 14 %}
+                                            ASSEZ BIEN
+                                        {% elif 14 <= note.moyenne_note and note.moyenne_note < 16 %}
+                                            BIEN
+                                        {% elif 16 <= note.moyenne_note and note.moyenne_note < 18 %}
+                                            TRÈS BIEN
+                                        {% else %}
+                                            EXCELLENT
+                                        {% endif %}
+                    
+                                    </td> 
+                                    <td>{{ note.matiere.professeur_id.admin.first_name }}</td>
+                                    
+                    
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="5"><strong>Totaux :</strong></td>
+                                    <td><strong>{{ total_coefficients }}</strong></td>
+                                    <td><strong>{{ total_pondered|floatformat:"2" }}</strong></td>
+                                    <td></td> <!-- colonne vide pour compenser les autres colonnes -->
+                                    
+                                    <td></td> <!-- colonne vide pour compenser les autres colonnes -->
+                                    <td></td> <!-- colonne vide pour compenser les autres colonnes -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    
+                    
+                    <hr>    
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+{% endblock main_content %}

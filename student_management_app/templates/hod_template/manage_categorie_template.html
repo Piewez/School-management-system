@@ -1,0 +1,50 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Liste de Catégorie des Matières
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+
+           <div class="row">
+          <div class="col-12">
+            
+            <!-- /.card -->
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Liste des Catégorie des Matières</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>ID </th>
+                    <th>Catégorie</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {% for categorie in categories %}
+                      <tr>
+                        <td>{{ categorie.id }}</td>
+                        <td>{{ categorie.nom }}</td>
+                        <td><a href="/edit_categorie_matiere/{{ categorie.id }}" class="btn btn-success">Edit</a></td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- /.content -->
+{% endblock main_content %}
+

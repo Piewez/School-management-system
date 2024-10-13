@@ -1,0 +1,227 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Liste des élèves de la classe de {{ classe.classe_name }}
+<a href="{% url 'generate_class_student_cards' classe.id %}?annee_scolaire={{ annee_scolaire_selected.id }}" target="_blank">Imprimer les Cartes Scolaires</a>
+
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Liste des élèves de la classe de {{ classe.classe_name }}</h3>
+                            <form method="get" class="form-inline float-right">
+                                <label for="annee_scolaire" class="mr-2">Année Scolaire:</label>
+                                <select name="annee_scolaire" id="annee_scolaire" class="form-control mr-2">
+                                    {% for annee in annees_scolaires %}
+                                        <option value="{{ annee.id }}" {% if annee.id == annee_scolaire_selected.id %}selected{% endif %}>
+                                            {{ annee.nom }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-primary">Filtrer</button>
+                            </form>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">#</th>
+                                        <th class="text-center">NOM</th>
+                                        <th class="text-center">PRENOM</th>
+                                        <th class="text-center">N° MATRICULE</th>
+                                        <th class="text-center">SEXE</th>
+                                        <th class="text-center">Profile</th>
+                                        <th class="text-center">Date de Naissance</th>
+                                        <th class="text-center">Statut</th>
+                                        <th class="text-center">Contact de Parent</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for eleve in eleves %}
+                                    <tr>
+                                        <td class="text-center">{{ forloop.counter }}</td>
+                                        <td class="text-center">{{ eleve.admin.first_name }}</td>
+                                        <td class="text-center">{{ eleve.admin.last_name }}</td>
+                                        <td class="text-center">{{ eleve.numero_matricule }}</td>
+                                        <td class="text-center">{{ eleve.gender }}</td>
+                                        <td><img src="{{ eleve.profile_pic }}" style="width:100px"/></td>
+                                        <td class="text-center">{{ eleve.date_naissance }}</td>
+                                        <td class="text-center">{{ eleve.statut }}</td>
+                                        <td class="text-center">{{ eleve.contact_parent }}</td>
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Actions
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalView{{ eleve.id }}">Afficher</a>
+                                                    <a class="dropdown-item" href="{% url 'edit_student' eleve.id %}">Éditer</a>
+                                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalCreate{{ eleve.id }}">Take Attendance</a>
+                                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalViewAttendance{{ eleve.id }}">View Attendance</a>
+                                                    <a class="dropdown-item" href="{% url 'generate_student_card' eleve.id %}" target="_blank">Télécharger la Carte Scolaire</a>
+                                                    <a class="dropdown-item" href="{% url 'enregistrer_comportement' eleve.id %}" target="_blank">Enregistrer Comportement</a>
+                                                    <a class="dropdown-item" href="{% url 'generate_student_card' eleve.id %}" target="_blank">Voir Comportement</a>
+                                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalDelete{{ eleve.id }}">Supprimer</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table><br>
+                            <form action="{% url 'list_eleve_classe_note_pdf' classe.id %}" method="get" class="form-inline float-left">
+                                {% csrf_token %}
+                                <input type="hidden" name="annee_scolaire" value="{{ annee_scolaire_selected.id }}">
+                                <button class="btn btn-primary" type="submit">Imprimer une fiche de note</button>
+                            </form>
+                            <form action="{% url 'list_eleve_classe_generate_pdf' classe.id %}" method="get" class="form-inline float-right">
+                                {% csrf_token %}
+                                <input type="hidden" name="annee_scolaire" value="{{ annee_scolaire_selected.id }}">
+                                <button class="btn btn-primary" type="submit">Imprimer la liste des élèves</button>
+                            </form>
+                            
+                        </div>
+
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+
+    {% for eleve in eleves %}
+    <!-- Modal Afficher -->
+    <div class="modal fade" id="modalView{{ eleve.id }}" tabindex="-1" role="dialog" aria-labelledby="modalViewLabel{{ eleve.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalViewLabel{{ eleve.id }}">Détails de l'élève</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Nom :</strong> {{ eleve.admin.first_name }}</p>
+                    <p><strong>Prénom :</strong> {{ eleve.admin.last_name }}</p>
+                    <p><strong>Email :</strong> {{ eleve.admin.email }}</p>
+                    <p><strong>Username :</strong> {{ eleve.admin.username }}</p>
+                    <p><strong>Numéro Matricule :</strong> {{ eleve.numero_matricule }}</p>
+                    <p><strong>Sexe :</strong> {{ eleve.gender }}</p>
+                    <p><strong>Date de Naissance :</strong> {{ eleve.date_naissance }}</p>
+                    <p><strong>Statut :</strong> {{ eleve.statut }}</p>
+                    <p><strong>Aptitude au Sport :</strong> {{ eleve.aptitude_sport }}</p>
+                    <p><strong>Année Scolaire :</strong> {{ eleve.annee_scolaire.nom }}</p>
+                    <p><strong>Adresse :</strong> {{ eleve.address }}</p>
+                    <p><strong>Contact de Parent :</strong> {{ eleve.contact_parent }}</p>
+                    <p><strong>Dernière Connexion :</strong> {{ eleve.admin.last_login }}</p>
+                    <p><strong>Date d'inscription :</strong> {{ eleve.admin.date_joined }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% for eleve in eleves %}
+    <!-- Modal Supprimer -->
+    <div class="modal fade" id="modalDelete{{ eleve.id }}" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLabel{{ eleve.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDeleteLabel{{ eleve.id }}">Confirmer la suppression</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer l'élève {{ eleve.admin.first_name }} {{ eleve.admin.last_name }} ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <a href="{% url 'delete_student' eleve.id %}" class="btn btn-danger">Supprimer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% for eleve in eleves %}
+    <div class="modal fade" id="modalCreate{{ eleve.id }}" tabindex="-1" role="dialog" aria-labelledby="modalCreateLabel{{ eleve.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCreateLabel{{ eleve.id }}">Ajouter un Comportement de {{ eleve.admin.first_name }} {{ eleve.admin.last_name }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{% url 'enregistrer_comportement' eleve.id %}?matiere={{ matiere_selected.id }}&trimestre={{ trimestre_selected.id }}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="trimestre">Trimestre</label>
+                            <select class="form-control" name="trimestre" id="trimestre" required>
+                                <option value="">-----------</option>
+                                {% for trimestre in trimestres %}
+                                    <option value="{{ trimestre.id }}" >{{ trimestre.periode_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="aspect">Aspect</label>
+                            <select class="form-control" name="aspect">
+                                <option value="retard">Retard</option>
+                                <option value="absence">Absence</option>
+                                <option value="participation">Participation en classe</option>
+                                <option value="qualite_travail">Qualité du travail</option>
+                                <option value="engagement">Engagement</option>
+                                <option value="proprete">Propreté du matériel</option>
+                                <option value="respect_regles">Respect des règles</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter Note</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% for eleve in eleves %}
+    <!-- Modal Afficher modalViewAttendance -->
+    <div class="modal fade" id="modalViewAttendance{{ eleve.id }}" tabindex="-1" role="dialog" aria-labelledby="modalViewAttendanceLabel{{ eleve.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalViewAttendanceLabel{{ eleve.id }}">Comportement de l'élève {{ eleve.admin.first_name}} {{ eleve.admin.last_name}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Aspect :</strong> {{ eleve.aspect }}</p>
+                    <p><strong>Points :</strong> {{ eleve.point }}</p>
+                    <p><strong>Date :</strong> {{ eleve.date }}</p>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock main_content %}

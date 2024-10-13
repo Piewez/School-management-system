@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Élèves Concernés par {{ examen_blanc.nom }}</title>
+</head>
+<body>
+    <h1>Élèves Concernés par l'Examen Blanc : {{ examen_blanc.nom }}</h1>
+    <p>Année Scolaire : {{ examen_blanc.annee_scolaire.nom }}</p>
+
+    <h2>Liste des Élèves</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Numéro Matricule</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Classe</th>
+                <th>Numéro de Table</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for eleve in eleves_concernes %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ eleve.numero_matricule }}</td>
+                <td>{{ eleve.admin.last_name }}</td>
+                <td>{{ eleve.admin.first_name }}</td>
+                <td>{{ eleve.classe_id.classe_name }}</td>
+                <td>
+                    
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Aucun élève trouvé pour cet examen blanc.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Numéro de Table</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Classe</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for numero_table_eleve in numero_table_eleves %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ numero_table_eleve.numero_table }}</td>
+                <td>{{ numero_table_eleve.student.admin.last_name }}</td>
+                <td>{{ numero_table_eleve.student.admin.first_name }}</td>
+                <td>{{ numero_table_eleve.student.classe_id.classe_name }}</td>
+                
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Aucun élève trouvé pour cet examen blanc.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,275 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+ Notes du {{ examen_blanc.nom }}
+{% endblock page_title %}
+{% block main_content %}
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="form-group">
+        {% if messages %}
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+          <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+          {% endif %}
+          {% if message.tags == 'success' %}
+          <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+          {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+        <div class="form-group">
+            <script>
+                {% if messages %}
+                  {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                    toastr.error("{{ message }}");
+                    {% endif %}
+                    {% if message.tags == 'success' %}
+                    toastr.success("{{ message }}");
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+            </script>
+        </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Notes du {{ examen_blanc.nom }} </h3>
+            </div>
+            <div class="card-body">
+                <form method="get" action="" enctype="multipart/form-data" role="form">
+                    
+                    <div class="row">
+                      <div class="col-sm-4">
+                        <div class="form-group">
+                          <label for="id_classe">Examen</label>
+                          <input type="text" class="form-control" id="id_examen" name="examen" value="{{ examen_blanc.nom }}" readonly >
+                        </div>
+                      </div>
+                      
+                      <div class="col-sm-4">
+                        <div class="form-group">
+                          <label for="matiere">matiere</label>
+                          <select class="form-control" name="matiere" id="matiere" required>
+                              <option value="">-----------</option>
+                              {% for matiere in matieres %}
+                                  <option value="{{ matiere.id }}" {% if matiere.id == matiere_selected.id %}selected{% endif %}>{{ matiere.matiere_name }}</option>
+                              {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-sm-4">
+                        <div class="form-group">
+                          <label for="numero_matiere">Valider Pour voir les Notes</label>
+                          <button type="submit" class="btn btn-primary form-control">Voir les Notes</button>
+                        </div>
+                      </div>    
+                    </div>
+                </form>
+
+                    <!-- Section des matières avec des notes existantes -->
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="matieres_existantes">Matières ayant déjà des notes pour cet examen</label>
+                            <div id="matieres_existantes">
+                                {% for matiere in matieres %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{ matiere.id }}" id="matiere_existante_{{ matiere.id }}" name="matieres_existantes[]" disabled
+                                        {% if matiere.possede_deja_notes %}checked{% endif %}>
+                                        <label class="form-check-label" for="matiere_existante_{{ matiere.id }}">
+                                            {{ matiere.matiere_name }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h2>Voici les Notes de : {{ matiere_selected.matiere_name }}</h2>
+                    <hr>
+                    
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Numéro de Table</th>
+                                <th>Note</th>
+                                <th>Rang</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for eleve in eleves %}
+                          <tr>
+                            <td><strong>{{ eleve.numero_table }}</strong></td>
+                            <td>{{ eleve.note|default:"None" }}</td>
+                            <td>
+                                        {% if eleve.rang_matiere %}
+                                            {% if eleve.rang_matiere == 1 and eleve.student.gender == 'M' %}
+                                                {{ eleve.rang_matiere }}er
+                                            {% elif eleve.rang_matiere == 1 and eleve.student.gender == 'F' %}
+                                                {{ eleve.rang_matiere }}ère
+                                            {% else %}
+                                                {{ eleve.rang_matiere }}ème
+                                            {% endif %}
+                                        {% else %}
+                                            Non Disponible
+                                        {% endif %}
+                            </td>
+                            <td class="text-center">
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  Actions
+                                </button>
+                                <div class="dropdown-menu">
+                                  {% if eleve.note_id %}
+                                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalEdit{{ eleve.note_id }}">Modifier</a>
+                                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalView{{ eleve.note_id }}">Afficher</a>
+                                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalDelete{{ eleve.note_id }}">Supprimer</a>
+                                  {% else %}
+                                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalCreate{{ eleve.id }}">Ajouter Note</a>
+                                  {% endif %}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        {% endfor %}
+
+                      </tbody>                      
+                    </table>
+                    <hr>    
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% for note in notes %}
+    <!-- Modal Modifier -->
+    <div class="modal fade" id="modalEdit{{ note.id }}" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel{{ note.id }}" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="modalEditLabel{{ note.id }}">Modifier la Note de {{ matiere_selected.matiere_name }} de l'élève {{ note.eleve.admin.first_name }} {{ note.eleve.admin.last_name }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <form method="POST" action="{% url 'edit_note' note.id %}">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                      <div class="form-group">
+                          <label for="devoir_{{ note.id }}">Note</label>
+                          <input type="number" step="0.01" name="devoir" class="form-control" id="devoir_{{ note.id }}" value="{{ note.devoir }}" required max="20">
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                      <button type="submit" class="btn btn-primary">Sauvegarder les modifications</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+    </div>
+
+    {% endfor %}
+    
+    {% for note in notes %}
+    <!-- Modal Afficher -->
+    <div class="modal fade" id="modalView{{ note.id }}" tabindex="-1" role="dialog" aria-labelledby="modalViewLabel{{ note.id }}" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="modalViewLabel{{ note.id }}">Détails des Notes de {{ matiere_selected.matiere_name }} de l'élève {{ note.eleve.admin.first_name }} {{ note.eleve.admin.last_name }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <div class="form-group">
+                      <label for="evaluation_classe_view_{{ note.id }}">Évaluations de Classe</label>
+                      <input type="text" class="form-control" id="evaluation_classe_view_{{ note.id }}" value="{{ note.evaluation_classe }}" readonly>
+                  </div>
+                  <div class="form-group">
+                      <label for="devoir_view_{{ note.id }}">Devoir</label>
+                      <input type="text" class="form-control" id="devoir_view_{{ note.id }}" value="{{ note.devoir }}" readonly>
+                  </div>
+                  <div class="form-group">
+                      <label for="composition_view_{{ note.id }}">Composition</label>
+                      <input type="text" class="form-control" id="composition_view_{{ note.id }}" value="{{ note.composition }}" readonly>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+              </div>
+          </div>
+      </div>
+    </div>
+    {% endfor %}
+
+
+    {% for note in notes %}
+    <!-- Modal Supprimer -->
+    <div class="modal fade" id="modalDelete{{ note.id }}" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLabel{{ note.id }}" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="modalDeleteLabel{{ note.id }}">Confirmer la suppression</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  Êtes-vous sûr de vouloir supprimer la note de l'élève {{ note.eleve.admin.first_name }} {{ note.eleve.admin.last_name }} ?
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                  <a href="{% url 'delete_note' note.id %}" class="btn btn-danger">Supprimer</a>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    {% endfor %}
+
+    <!-- Modal Ajouter Note -->
+    <!-- Modal Ajouter Note -->
+    {% for eleve in eleves %}
+    <div class="modal fade" id="modalCreate{{ eleve.id }}" tabindex="-1" role="dialog" aria-labelledby="modalCreateLabel{{ eleve.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCreateLabel{{ eleve.id }}">Ajouter une Note pour {{ eleve.admin.first_name }} {{ eleve.admin.last_name }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{% url 'create_note' eleve.id %}?matiere={{ matiere_selected.id }}&trimestre={{ trimestre_selected.id }}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="evaluation_classe_create_{{ eleve.id }}">Évaluations de Classe</label>
+                            <input type="number" step="0.01" name="evaluation_classe" class="form-control" id="evaluation_classe_create_{{ eleve.id }}" required max="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="devoir_create_{{ eleve.id }}">Devoir</label>
+                            <input type="number" step="0.01" name="devoir" class="form-control" id="devoir_create_{{ eleve.id }}" required max="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="composition_create_{{ eleve.id }}">Composition</label>
+                            <input type="number" step="0.01" name="composition" class="form-control" id="composition_create_{{ eleve.id }}" required max="20">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter Note</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock main_content %}

@@ -1,0 +1,65 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Liste des Examens
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Liste des Examens Blanc </h3>
+                        <form method="get" class="form-inline float-right">
+                            <label for="annee_scolaire" class="mr-2">Année Scolaire:</label>
+                            <select name="annee_scolaire" id="annee_scolaire" class="form-control mr-2">
+                                {% for annee in annees_scolaires %}
+                                    <option value="{{ annee.id }}" {% if annee.id == annee_scolaire_selected.id %}selected{% endif %}>
+                                        {{ annee.nom }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-primary">Filtrer</button>
+                        </form>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <h2 class="fw-bolder">Sélectionnez un Examen pour Voir les Résultats</h2>
+                        <hr>
+                        <div class="row justify-content-center">
+                        {% for examen in examens %}
+                         <div class="col-lg-3 col-6"> 
+                          <!-- small box -->
+                           
+                           <div class="small-box bg-info">
+                            <div class="inner">
+                              <h5>{{ examen.nom}}</h5>
+              
+                              <p>{{examen.annee_scolaire.nom}}</p>
+                            </div>
+                            <div class="icon">
+                              <i class="ion ion-bag"></i>
+                            </div>
+                            <a href="{% url 'view_exam_results' examen.id %}" class="small-box-footer">Voir les élèves <i class="fas fa-arrow-circle-right"></i></a>
+                          </div>
+                          
+                        </div>
+                        {% endfor %}
+                        
+                    </div>
+                    </div>
+
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            
+
+
+      </div>
+    </section>
+    <!-- /.content -->
+
+{% endblock main_content %}
+

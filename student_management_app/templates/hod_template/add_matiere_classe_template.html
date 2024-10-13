@@ -1,0 +1,84 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Add Matiere
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Add Matiere</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form role="form" action="/add_matiere_save" method="post">
+                  {% csrf_token %}
+                <div class="card-body">
+                  <div class="form-group">
+                    <label>Matiere Name </label>
+                    <input type="text" class="form-control" name="matiere_name" placeholder="Enter Matiere">
+                  </div>
+                   <div class="form-group">
+                    <label>Catégorie </label>
+                    <select class="form-control" name="categorie">
+                        {% for categorie in categories %}
+                          <option value="{{ categorie.id }}">{{ categorie.nom }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Classe </label>
+                    <select class="form-control" name="classe">
+                        
+                          <option value="{{ classe.id }}" selected>{{ classe.classe_name }}</option>
+                       
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Coefficient de la Matière </label>
+                    <input type="number" class="form-control" name="coefficient" placeholder="Enter le Coefficient pour cette matières">
+                  </div>
+                  <div class="form-group">
+                    <label>Professeur</label>
+                    <select class="form-control" name="professeur">
+                        {% for professeur in professeurs %}
+                          <option value="{{ professeur.id }}">{{ professeur.admin.first_name }} {{ professeur.admin.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                   <div class="form-group">
+                      {% if messages %}
+                        {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                        <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% if message.tags == 'success' %}
+                        <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary btn-block">Add Matiere</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+
+
+
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+

@@ -1,0 +1,90 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Liste des Matieres
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+
+           <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Matiere Details</h3>
+
+                <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive">
+                <h2 class="fw-bolder">Selectionnez une classe </h2>
+                <hr>
+                <div class="row justify-content-center">
+                    {% for classe in classes %}
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 px-1 pb-2">
+                        <a href="{% url 'manage_matiere_classe' classe.id %}">
+                        <div class="card card-default rounded-0 shadow bg-primary bg-gradient border-0 text-light">
+                            
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <div class="row mx-0 w-100 align-items-center">
+                                        <div class="col-3">
+                                            <i class="fs-1 text-light fas fa-school"></i>
+                                        </div>
+                                        <div class="col-9">
+                                            <h5 class="text-end">{{classe.classe_name}}</h5>
+                                        </div>
+                                        <div class="col-12 text-end"><b>Voir les matières</b></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div></a>
+                        
+                    </div>
+                    {% endfor %}
+            </div>
+                <table class="table table-hover text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Matiere Name</th>
+                      <th>Classe Name</th>
+                      <th>Classe ID</th>
+                      <th>Professeur Name</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for matiere in matieres %}
+                    <tr>
+                      <td>{{ matiere.id }}</td>
+                      <td>{{ matiere.matiere_name }}</td>
+                      <td>{{ matiere.classe_id.classe_name }}</td>
+                      <td>{{ matiere.classe_id.id }}</td>
+                      <td>{{ matiere.professeur_id.first_name }} {{ matiere.professeur_id.last_name }}</td>
+                      <td><a href="/edit_matiere/{{ matiere.id }}" class="btn btn-success">Edit</a></td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+

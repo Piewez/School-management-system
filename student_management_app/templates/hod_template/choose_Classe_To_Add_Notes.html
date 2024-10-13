@@ -1,0 +1,61 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Voici les classes
+{% endblock page_title %}
+{% block main_content %}
+
+<section class="content">
+    <div class="container-fluid">
+
+
+      <div class="row">
+        <div class="col-12">
+          
+          <!-- /.card -->
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Liste des classes</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <h2 class="fw-bolder">Choisir une classe Pour ajouter une Note</h2>
+                <hr>
+                <div class="row justify-content-center">
+                    {% for classe in classes %}
+                    <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12 px-1 pb-2">
+                        <a href="{% url 'add_note' classe.id %}">
+                        <div class="card card-default rounded-0 shadow bg-primary bg-gradient border-0 text-light">
+                            
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <div class="row mx-0 w-100 align-items-center">
+                                        <div class="col-3">
+                                            <i class="fs-1 text-light fas fa-school"></i>
+                                        </div>
+                                        <div class="col-9">
+                                            <h5 class="text-end">{{classe.classe_name}}</h5>
+                                        </div>
+                                        <div class="col-12 text-end"><b>Notes</b></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div></a>
+                        
+                    </div>
+                    {% endfor %}
+            </div>
+            <!-- /.card-body -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+    
+<section class="">
+    
+        
+</section>
+
+{% endblock main_content %}

@@ -1,0 +1,144 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Liste des Professeurs
+{% endblock page_title %}
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="form-group">
+          {% if messages %}
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+            {% endif %}
+            {% if message.tags == 'success' %}
+            <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+            {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+
+
+           <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Professeur Details</h3>
+
+                <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 130px;">
+                    <form action="{% url 'add_professeur' %}" method="get" class="form-inline float-right">
+                      {% csrf_token %}
+                      <input type="hidden" name="add_professeur" value="{{ add_professeur }}">
+                      <button class="btn btn-primary" type="submit"><i class="nav-icon fas fa-plus"></i> Add Prof</button>
+                  </form>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive">
+                <table id="example1" class="table table-bordered table-striped" >
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nom</th>
+                      <th>Prénom</th>
+                      <th>Email</th>
+                      <th>Address</th>
+                      <th>Nombres d'élèves enseignés</th>
+                      <th>Last Login</th>
+                      <th>Date Joined</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for professeur in professeurs %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ professeur.admin.first_name }}</td>
+                      <td>{{ professeur.admin.last_name }}</td>
+                      <td>{{ professeur.admin.email }}</td>
+                      <td>{{ professeur.address }}</td>
+                      <td>{{ professeur.nombre_eleves_enseignes }}</td>
+                      {% comment %} <td>{{ professeur.nombre_eleves_enseignes }}</td> {% endcomment %}
+                      <td>{{ professeur.admin.last_login }}</td>
+                      <td>{{ professeur.admin.date_joined }}</td>
+                      <td class="text-center">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Actions
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalView{{ professeur.id }}">Afficher</a>
+                                <a class="dropdown-item" href="{% url 'edit_professeur' professeur.id %}">Éditer</a>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalDelete{{ professeur.id }}">Supprimer</a>
+                            </div>
+                        </div>
+                    </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- /.content -->
+    {% for professeur in professeurs %}
+    <!-- Modal Afficher -->
+    <div class="modal fade" id="modalView{{ professeur.id }}" tabindex="-1" role="dialog" aria-labelledby="modalViewLabel{{ professeur.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalViewLabel{{ professeur.id }}">Détails du Professeur</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Nom :</strong> {{ professeur.admin.first_name }}</p>
+                    <p><strong>Prénom :</strong> {{ professeur.admin.last_name }}</p>
+                    <p><strong>Adresse :</strong> {{ professeur.address }}</p>
+                    <p><strong>Username :</strong> {{ professeur.admin.username }}</p>
+                    <p><strong>Date d'inscription :</strong> {{ professeur.admin.date_joined }}</p>
+                    <p><strong>Last login :</strong> {{ professeur.admin.last_login }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% for professeur in professeurs %}
+    <!-- Modal Supprimer -->
+    <div class="modal fade" id="modalDelete{{ professeur.id }}" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLabel{{ professeur.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDeleteLabel{{ professeur.id }}">Confirmer la suppression</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer le professeur: {{ professeur.admin.first_name }} {{ professeur.admin.last_name }} ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <a href="{% url 'delete_professeur' professeur.id %}" class="btn btn-danger">Supprimer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+{% endblock main_content %}
+

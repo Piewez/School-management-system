@@ -1,0 +1,79 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Liste des élèves du {{ examen_blanc.nom }}
+
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Liste des élèves du {{ examen_blanc.nom }}</h3>
+                            
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">#</th>
+                                        <th class="text-center">N° de Table</th>
+                                        <th class="text-center">NOM</th>
+                                        <th class="text-center">PRENOM</th>
+                                        <th class="text-center">Classe</th>
+                                        <th class="text-center">Sexe</th>
+                                        <th class="text-center">Profile</th>
+                                        <th class="text-center">Date de Naissance</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for numero_table_eleve in numero_table_eleves %}
+                                    <tr>
+                                        <td class="text-center">{{ forloop.counter }}</td>
+                                        <td class="text-center">{{ numero_table_eleve.numero_table }}</td>
+                                        <td class="text-center">{{ numero_table_eleve.student.admin.first_name }}</td>
+                                        <td class="text-center">{{ numero_table_eleve.student.admin.last_name }}</td>
+                                        <td class="text-center">{{ numero_table_eleve.student.classe_id.classe_name }}</td>
+                                        <td class="text-center">{{ numero_table_eleve.student.gender }}</td>
+                                        <td><img src="{{ numero_table_eleve.student.profile_pic }}" style="width:100px"/></td>
+                                        <td class="text-center">{{ numero_table_eleve.student.date_naissance }}</td>
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Actions
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalView{{ numero_table_eleve.id }}">Afficher</a>
+                                                    
+                                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalCreate{{ numero_table_eleve.id }}">Take Attendance</a>
+                                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalViewAttendance{{ numero_table_eleve.id }}">View Attendance</a>
+                                                
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table><br>
+                            <form action="{% url 'list_eleve_examen_generate_pdf' examen_blanc.id %}" method="get" class="form-inline float-right">
+                                {% csrf_token %}
+                                <input type="hidden" name="examen_blanc" value="{{ examen_blanc.id }}">
+                                <button class="btn btn-primary" type="submit">Imprimer la liste des élèves</button>
+                            </form>
+                            
+                        </div>
+
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+
+{% endblock main_content %}

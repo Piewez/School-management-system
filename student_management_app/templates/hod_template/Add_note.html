@@ -1,0 +1,155 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Bienvenue! Ajouter les Notes de {{ classe.classe_name }}
+{% endblock page_title %}
+{% block main_content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-group">
+            <script>
+                {% if messages %}
+                  {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                    toastr.error("{{ message }}");
+                    {% endif %}
+                    {% if message.tags == 'success' %}
+                    toastr.success("{{ message }}");
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+            </script>
+        </div>
+        <div class="form-group">
+          {% if messages %}
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+            {% endif %}
+            {% if message.tags == 'success' %}
+            <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+            {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Ajouter Notes de {{ classe.classe_name }} </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" action="" enctype="multipart/form-data" role="form" id="noteForm">
+                    {% csrf_token %}
+                    <div class="row">
+                      <div class="col-sm-3">
+                          <div class="form-group">
+                              <label for="id_classe">Classe</label>
+                              <input type="text" class="form-control" id="id_classe" name="classe" value="{{ classe.classe_name }}" readonly >
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <div class="form-group">
+                              <label for="trimestre">Trimestre</label>
+                              <select class="form-control" name="trimestre" id="trimestre" required onchange="document.getElementById('noteForm').submit();">
+                                  {% for trimestre in trimestres %}
+                                      <option value="{{ trimestre.id }}" {% if trimestre.id == selected_trimestre_id %}selected{% endif %}>{{ trimestre.periode_name }}</option>
+                                  {% endfor %}
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <div class="form-group">
+                              <label for="matiere">Matière</label>
+                              <select class="form-control" name="matiere" id="matiere">
+                                  {% for matiere in matieres %}
+                                      <option value="{{ matiere.id }}">{{ matiere.matiere_name }}</option>
+                                  {% endfor %}
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-sm-3">
+                          <div class="form-group">
+                              <label for="numero_matiere">Numéro de la Matière</label>
+                              <input class="form-control" placeholder="Enter ..." type="number" id="numero_matiere" name="numero_matiere">
+                          </div>
+                      </div>    
+                  </div>
+
+                    <!-- Section des matières avec des notes existantes -->
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="matieres_existantes">Matières ayant déjà des notes pour ce trimestre</label>
+                            <div id="matieres_existantes">
+                                {% for matiere in matieres %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{ matiere.id }}" id="matiere_existante_{{ matiere.id }}" name="matieres_existantes[]" disabled
+                                        {% if matiere.possede_deja_notes %}checked{% endif %}>
+                                        <label class="form-check-label" for="matiere_existante_{{ matiere.id }}">
+                                            {{ matiere.matiere_name }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                  
+                  <table id="elevesTable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Élève</th>
+                            <th>Évaluations de Classe</th>
+                            <th>Devoir</th>
+                            <th>Composition</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for eleve in eleves %}
+                        <tr>
+                            <td>
+                                <strong>{{ eleve.admin.first_name }} {{ eleve.admin.last_name }}</strong>
+                                {% if eleve.aptitude_sport == "Inapte" %}
+                                    <span class="inapte-label" style="display:none;">INAPTE</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if eleve.aptitude_sport == "Inapte" %}
+                                    <strong class="inapte-label" style="display:none;">INAPTE</strong>
+                                {% else %}
+                                  <input type="number" step="0.01" id="evaluation_classe_{{ eleve.id }}" name="evaluation_classe_{{ eleve.id }}" required max="20">
+                                {% endif %}
+                            </td>
+                            <td><input type="number" step="0.01" id="devoir_{{ eleve.id }}" name="devoir_{{ eleve.id }}" required max="20"></td>
+                            <td><input type="number" step="0.01" id="composition_{{ eleve.id }}" name="composition_{{ eleve.id }}" required max="20"></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                    <hr>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.getElementById('matiere').addEventListener('change', function() {
+        var selectedMatiere = this.options[this.selectedIndex].text;
+        var inapteLabels = document.querySelectorAll('.inapte-label');
+        if (selectedMatiere === 'EPS') {
+            inapteLabels.forEach(function(label) {
+                label.style.display = 'inline';
+            });
+        } else {
+            inapteLabels.forEach(function(label) {
+                label.style.display = 'none';
+            });
+        }
+    });
+</script>
+{% endblock main_content %}

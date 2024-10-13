@@ -1,0 +1,116 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Liste des Matieres de la classe de {{ classe.classe_name}}
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+
+
+           <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Matiere Details</h3>
+
+                
+              </div>
+              <!-- /.card-header -->
+              
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Matiere Name</th>
+                      <th>Catégorie de la Matière</th>
+                      <th>Coefficient</th>
+                      <th>Professeur Name</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for matiere in matieres %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ matiere.matiere_name }}</td>
+                      <td>{{ matiere.categorie.nom }}</td>
+                      <td>{{ matiere.coefficient }}</td>
+                      <td>{{ matiere.professeur_id.admin.first_name }} {{ matiere.professeur_id.admin.last_name }}</td>
+                      <td class="text-center">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Actions
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalView{{ matiere.id }}">Afficher</a>
+                                <a class="dropdown-item" href="{% url 'edit_matiere' matiere.id %}">Éditer</a>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalDelete{{ matiere.id }}">Supprimer</a>
+                            </div>
+                        </div>
+                    </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- /.content -->
+
+    {% for matiere in matieres %}
+    <!-- Modal Afficher -->
+    <div class="modal fade" id="modalView{{ matiere.id }}" tabindex="-1" role="dialog" aria-labelledby="modalViewLabel{{ matiere.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalViewLabel{{ matiere.id }}">Détails de l'élève</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Nom de la matière :</strong> {{ matiere.matiere_name }}</p>
+                    <p><strong>Catégorie :</strong> {{ matiere.categorie.nom }}</p>
+                    <p><strong>Coefficient :</strong> {{ matiere.coefficient }}</p>
+                    <p><strong>Professeur chargé :</strong> {{ matiere.professeur_id.first_name }} {{ matiere.professeur_id.last_name }}</p>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% for matiere in matieres %}
+    <!-- Modal Supprimer -->
+    <div class="modal fade" id="modalDelete{{ matiere.id }}" tabindex="-1" role="dialog" aria-labelledby="modalDeleteLabel{{ matiere.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDeleteLabel{{ matiere.id }}">Confirmer la suppression</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer la matière : {{ matiere.matiere_name}}?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <a href="{% url 'delete_matiere' matiere.id %}" class="btn btn-danger">Supprimer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock main_content %}
+

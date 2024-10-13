@@ -1,0 +1,147 @@
+
+{% extends 'hod_template/base_template.html' %}
+{% load custom_filters %}
+{% block page_title %}
+Resultat les Notes de {{ classe.classe_name }}
+{% endblock page_title %}
+{% block main_content %}
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="form-group">
+        {% if messages %}
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+          <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+          {% endif %}
+          {% if message.tags == 'success' %}
+          <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+          {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+        <div class="form-group">
+            <script>
+                {% if messages %}
+                  {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                    toastr.error("{{ message }}");
+                    {% endif %}
+                    {% if message.tags == 'success' %}
+                    toastr.success("{{ message }}");
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+            </script>
+        </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card card-orange">
+            <div class="card-header">
+              <h3 class="card-title">Résultats de {{ classe.classe_name }} </h3>
+            </div>
+            <div class="card-body">
+                    <div class="row">
+                      <div class="col-sm-6">
+                        
+                            <div class="form-check-label">
+                              <h6>Moyenne la plus élevée de la classe: <strong>{{ moyenne_max|floatformat:"2" }} </strong></h6>
+                            </div>
+                            <div class="form-check-label">
+                             <h6> Moyenne la plus faible de la classe: <strong>{{ moyenne_min|floatformat:"2" }}</strong></h6>
+                            </div>
+                            <div class="form-check-label">
+                              <h6>Moyenne générale de la classe: <strong>{{ moyenne_generale|floatformat:"2" }}</strong></h6>
+                            </div>
+                            <div class="form-check-label">
+                              <h6>Nombre de moyennes : <strong>{{ nombre_moyennes }}</strong></h6>
+                            </div>
+                          </div>
+                          <div class="col-sm-6">
+                            <a href="{% url 'resultat_annuel_classe_pdf' classe.id %}" method="get">
+                                {% csrf_token %}
+                                <button type="submit"class="btn bg-purple form-control">Imprimer les Résultats Annuel</button>
+                            </a><br>
+                          </div>
+                        </div>
+                        <hr>  
+                
+
+                    
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Élève</th>
+                                <th>Sexe</th>
+                                {% for trimestre in trimestres %}
+                                    <th>{{ trimestre.periode_name }}</th>
+                                {% endfor %}
+                                <th> Moyenne Annuelle </th>
+                                <th> Rang </th>
+                                <th> Observation </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for eleve in eleves %}
+                                <tr>
+                                    <td>{{ eleve.admin.first_name }} {{ eleve.admin.last_name }}</td>
+                                    <td> {{ eleve.gender }}</td>
+                                    {% for moyennes_periode in eleve.moyenne_periodes %}
+                                        <td>
+                                            {% if moyennes_periode %}
+                                                {{ moyennes_periode.moyenne|floatformat:2 }}
+                                            {% else %}
+                                                Non Disponible
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                    <td>
+                                        {% if eleve.moyenne_annuelle %}
+                                            {{ eleve.moyenne_annuelle|floatformat:2 }}
+                                        {% else %}
+                                            Non Disponible
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if eleve.rang_annuel %}
+                                            {% if eleve.rang_annuel == 1 and eleve.gender == 'M' %}
+                                                {{ eleve.rang_annuel }}er
+                                            {% elif eleve.rang_annuel == 1 and eleve.gender == 'F' %}
+                                                {{ eleve.rang_annuel }}ère
+                                            {% else %}
+                                                {{ eleve.rang_annuel }}ème
+                                            {% endif %}
+                                        {% else %}
+                                            Non Disponible
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if eleve.moyenne_annuelle >= 10 and eleve.gender == 'M' %}
+                                                
+                                                <h4 class="badge badge-success"> Admis</h4>
+                                            {% elif eleve.moyenne_annuelle >= 10 and eleve.gender == 'F' %}
+                                            <h4 class="badge badge-success"> Admise</h4>
+                                            {% elif eleve.moyenne_annuelle < 10 and eleve.gender == 'F' %}
+                                            <h4 class="badge badge-danger"> Ajournée </h4>
+                                            {% else %}
+                                            <h4 class="badge badge-danger"> Ajourné</h4>
+                                            
+                                        {% endif %}
+                                    </td>
+                                    
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    
+                    <hr>    
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock main_content %}

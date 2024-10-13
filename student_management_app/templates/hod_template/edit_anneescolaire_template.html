@@ -1,0 +1,71 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Mise à Jour de l'Année | Année  Scolaire : {{ anneescolaire.nom }}
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Mise à Jour de l'Année</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form role="form" action="/edit_anneescolaire_save" method="post">
+                  {% csrf_token %}
+                <div class="card-body">
+                  <div class="form-group">
+                    <label>Année Scolaire </label>
+                    <input type="text" class="form-control" name="annneescolaire_name" placeholder="Entrer l'Année" value="{{ anneescolaire.nom }}">
+                    <input type="hidden"  name="anneescolaire_id"  value="{{ anneescolaire.id }}">
+                  </div>
+                  <div class="form-group">
+                    <label>Session Start Year </label>
+                    <input type="date" class="form-control" name="session_start" placeholder="Enter Session Start Year" value="{{ anneescolaire.session_start_year }}">
+                   
+                  </div>
+
+                 <div class="form-group">
+                    <label>Session End Year </label>
+                    <input type="date" class="form-control" name="session_end" placeholder="Enter Session End Year" value="{{ anneescolaire.session_end }}">
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="is_complete" >
+                    <label class="form-check-label">Is Complete?</label>
+                  </div>
+                   <div class="form-group">
+                      {% if messages %}
+                        {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                        <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% if message.tags == 'success' %}
+                        <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary btn-block">Save Session Year</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+
+
+
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+
