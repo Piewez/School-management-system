@@ -689,7 +689,13 @@ def create_user_profile(sender,instance,created,**kwargs):
         if instance.user_type==2:
             Professeurs.objects.create(admin=instance,address="")
         if instance.user_type==3:
-            Students.objects.create(admin=instance,classe_id=Classes.objects.get(id=1),annee_scolaire=SessionYearModel.get_current_session(),address="",profile_pic="",gender="",numero_matricule="",statut="",date_naissance="2000-12-31",contact_parent="",aptitude_sport="")
+            default_classe = Classes.objects.first()
+        if default_classe:
+            Students.objects.create(admin=instance, classe_id=default_classe, annee_scolaire=SessionYearModel.get_current_session(),address="",profile_pic="",gender="",numero_matricule="",statut="",date_naissance="2000-12-31",contact_parent="",aptitude_sport="")
+        else:
+            # Gérer le cas où aucune classe n'existe (afficher un message d'erreur ou créer une classe par défaut)
+            raise ValueError("No classes available to assign to the student.")
+
         if instance.user_type==4:
             Economes.objects.create(admin=instance,address="")
 
@@ -701,5 +707,5 @@ def save_user_profile(sender,instance,**kwargs):
         instance.professeurs.save()
     if instance.user_type==3:
         instance.students.save()
-    if instance.user_type==3:
+    if instance.user_type==4:
         instance.economes.save()

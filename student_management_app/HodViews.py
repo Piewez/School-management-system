@@ -401,9 +401,8 @@ def add_student_save(request):
         if form.is_valid():
             first_name = form.cleaned_data["first_name"]
             last_name = form.cleaned_data["last_name"]
-            username = form.cleaned_data["username"]
             email = form.cleaned_data["email"]
-            password = form.cleaned_data["password"]
+            password = form.cleaned_data["password"] or "piro1234"  # Mot de passe par défaut si non fourni
             address = form.cleaned_data["address"]
             numero_matricule = form.cleaned_data["numero_matricule"]
             statut = form.cleaned_data["statut"]
@@ -414,14 +413,18 @@ def add_student_save(request):
             classe_id = form.cleaned_data["classe"]
             sex = form.cleaned_data["sex"]
 
-            profile_pic = request.FILES['profile_pic']
-            fs = FileSystemStorage()
-            filename = fs.save(profile_pic.name, profile_pic)
-            profile_pic_url = fs.url(filename)
+            # Photo de profil facultative
+            if 'profile_pic' in request.FILES:
+                profile_pic = request.FILES['profile_pic']
+                fs = FileSystemStorage()
+                filename = fs.save(profile_pic.name, profile_pic)
+                profile_pic_url = fs.url(filename)
+            else:
+                profile_pic_url = ""  # Ou utiliser une image par défaut
 
             try:
                 user = CustomUser.objects.create_user(
-                    username=username,
+                    username=email,  # Utiliser l'email comme username
                     password=password,
                     email=email,
                     last_name=last_name,
@@ -451,7 +454,6 @@ def add_student_save(request):
                 messages.error(request, error_message)
                 return HttpResponseRedirect(reverse("add_student"))
         else:
-            form = AddStudentForm(request.POST)
             return render(request, "hod_template/add_student_template.html", {"form": form})
 
 

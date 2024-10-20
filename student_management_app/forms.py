@@ -11,30 +11,22 @@ class DateInput(forms.DateInput):
     input_type = "date"
 
 class AddStudentForm(forms.Form):
-    email=forms.EmailField(label="Email",max_length=50,widget=forms.EmailInput(attrs={"class":"form-control","autocomplete":"off"}))
-    password=forms.CharField(label="Password",max_length=50,widget=forms.PasswordInput(attrs={"class":"form-control"}))
-    first_name=forms.CharField(label="NOM",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
-    last_name=forms.CharField(label="Prénoms",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
-    username=forms.CharField(label="Username",max_length=50,widget=forms.TextInput(attrs={"class":"form-control","autocomplete":"off"}))
-    address=forms.CharField(label="Addresse",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
-    numero_matricule=forms.CharField(label="N° Matricule",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
-    statut=forms.CharField(label="Statut",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
-    address=forms.CharField(label="Address",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
+    email = forms.EmailField(label="Email", max_length=50, widget=forms.EmailInput(attrs={"class": "form-control", "autocomplete": "off"}))
+    # Supprimer le champ password si vous souhaitez définir un mot de passe par défaut
+    password = forms.CharField(label="Password", max_length=50, widget=forms.PasswordInput(attrs={"class": "form-control"}), required=False)
+    first_name = forms.CharField(label="NOM", max_length=50, widget=forms.TextInput(attrs={"class": "form-control"}))
+    last_name = forms.CharField(label="Prénoms", max_length=50, widget=forms.TextInput(attrs={"class": "form-control"}))
+    address = forms.CharField(label="Addresse", max_length=50, widget=forms.TextInput(attrs={"class": "form-control"}))
+    numero_matricule = forms.CharField(label="N° Matricule", max_length=50, widget=forms.TextInput(attrs={"class": "form-control"}))
+    statut = forms.CharField(label="Statut", max_length=50, widget=forms.TextInput(attrs={"class": "form-control"}))
     contact_parent = forms.CharField(label="Contact Parent", max_length=100, widget=forms.TextInput(attrs={"class": "form-control"}))
-    #sex = forms.ChoiceField(label="Sex", choices=(("M", "M"), ("F", "F")), widget=forms.Select(attrs={"class": "form-control"}))
     date_naissance = forms.DateField(label="Date de Naissance", widget=forms.DateInput(attrs={'type': 'date', "class": "form-control"}))
     aptitude_sport = forms.ChoiceField(label="Aptitude Sport", choices=(('Apte', 'Apte'), ('Inapte', 'Inapte')), widget=forms.Select(attrs={"class": "form-control"}))
 
+    gender_choice = (("M", "M"), ("F", "F"))
+    sex = forms.ChoiceField(label="Sexe", choices=gender_choice, widget=forms.Select(attrs={"class": "form-control"}))
+    profile_pic = forms.FileField(label="Profile Pic", max_length=50, widget=forms.FileInput(attrs={"class": "form-control"}), required=False)
 
-
-    gender_choice=(
-        ("M","M"),
-        ("F","F")
-    )
-
-    sex=forms.ChoiceField(label="Sexe",choices=gender_choice,widget=forms.Select(attrs={"class":"form-control"}))
-    profile_pic=forms.FileField(label="Profile Pic",max_length=50,widget=forms.FileInput(attrs={"class":"form-control"}))
-    
     def __init__(self, *args, **kwargs):
         super(AddStudentForm, self).__init__(*args, **kwargs)
         classes = Classes.objects.all()
@@ -49,12 +41,58 @@ class AddStudentForm(forms.Form):
                 widget=forms.Select(attrs={"class": "form-control"})
             )
         else:
-            # Gérer le cas où il n'y a pas d'année scolaire en cours
             self.fields['annee_scolaire'] = forms.ChoiceField(
                 label="Année Scolaire",
                 choices=[],
                 widget=forms.Select(attrs={"class": "form-control"})
             )
+
+
+# class AddStudentForm(forms.Form):
+#     email=forms.EmailField(label="Email",max_length=50,widget=forms.EmailInput(attrs={"class":"form-control","autocomplete":"off"}))
+#     password=forms.CharField(label="Password",max_length=50,widget=forms.PasswordInput(attrs={"class":"form-control"}))
+#     first_name=forms.CharField(label="NOM",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
+#     last_name=forms.CharField(label="Prénoms",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
+#     username=forms.CharField(label="Username",max_length=50,widget=forms.TextInput(attrs={"class":"form-control","autocomplete":"off"}))
+#     address=forms.CharField(label="Addresse",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
+#     numero_matricule=forms.CharField(label="N° Matricule",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
+#     statut=forms.CharField(label="Statut",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
+#     address=forms.CharField(label="Address",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
+#     contact_parent = forms.CharField(label="Contact Parent", max_length=100, widget=forms.TextInput(attrs={"class": "form-control"}))
+#     #sex = forms.ChoiceField(label="Sex", choices=(("M", "M"), ("F", "F")), widget=forms.Select(attrs={"class": "form-control"}))
+#     date_naissance = forms.DateField(label="Date de Naissance", widget=forms.DateInput(attrs={'type': 'date', "class": "form-control"}))
+#     aptitude_sport = forms.ChoiceField(label="Aptitude Sport", choices=(('Apte', 'Apte'), ('Inapte', 'Inapte')), widget=forms.Select(attrs={"class": "form-control"}))
+
+
+
+#     gender_choice=(
+#         ("M","M"),
+#         ("F","F")
+#     )
+
+#     sex=forms.ChoiceField(label="Sexe",choices=gender_choice,widget=forms.Select(attrs={"class":"form-control"}))
+#     profile_pic=forms.FileField(label="Profile Pic",max_length=50,widget=forms.FileInput(attrs={"class":"form-control"}))
+    
+#     def __init__(self, *args, **kwargs):
+#         super(AddStudentForm, self).__init__(*args, **kwargs)
+#         classes = Classes.objects.all()
+#         classe_list = [(classe.id, classe.classe_name) for classe in classes]
+#         self.fields['classe'] = forms.ChoiceField(label="Classe", choices=classe_list, widget=forms.Select(attrs={"class": "form-control"}))
+        
+#         current_session = SessionYearModel.get_current_session()
+#         if current_session:
+#             self.fields['annee_scolaire'] = forms.ChoiceField(
+#                 label="Année Scolaire",
+#                 choices=[(current_session.id, current_session.nom)],
+#                 widget=forms.Select(attrs={"class": "form-control"})
+#             )
+#         else:
+#             # Gérer le cas où il n'y a pas d'année scolaire en cours
+#             self.fields['annee_scolaire'] = forms.ChoiceField(
+#                 label="Année Scolaire",
+#                 choices=[],
+#                 widget=forms.Select(attrs={"class": "form-control"})
+#             )
 
 class EditStudentForm(forms.Form):
     email=forms.EmailField(label="Email",max_length=50,widget=forms.EmailInput(attrs={"class":"form-control","autocomplete":"off"}))
