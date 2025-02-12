@@ -71,7 +71,7 @@ Resultat les Notes de {{ classe.classe_name }}
                       </div>
                       <div class="col-sm-3">
                         <div class="form-group">
-                          <label for="numero_matiere">Imprimer les Resultats de {{ classe.classe_name }}</label>
+                          <label for="numero_matiere">Imprimer les Resultats</label>
                           <form action="{% url 'resultat_classe_pdf' trimestre_selected.id classe.id %}" method="get">
                             {% csrf_token %}
                             <button type="submit" hidden></button>
@@ -129,10 +129,10 @@ Resultat les Notes de {{ classe.classe_name }}
                                     {% csrf_token %}
                                     <button type="submit"class="btn bg-purple form-control">Imprimer les Bulletins de chaque élève</button>
                                 </form><br>
-                                <a href="{% url 'statistique_classe_pdf' trimestre_selected.id classe.id %}" >
+                                <form action="{% url 'statistique_classe_pdf' trimestre_selected.id classe.id %}" method="get">
                                     {% csrf_token %}
                                     <button type="submit"class="btn bg-purple form-control">Voirs les Statistiques</button>
-                                </a><br><br>
+                                </form><br><br>
                                 <a href="{% url 'generate_graphique_pdf' trimestre_selected.id classe.id %}" >
                                     {% csrf_token %}
                                     <button type="submit"class="btn bg-purple form-control">Voirs les Graphiques</button>

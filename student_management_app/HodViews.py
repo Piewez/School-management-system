@@ -3604,7 +3604,7 @@ def generate_table_for_matiere_statistics(matiere, trimestre):
     #return table_data, table_style
     return table_data
 
-def statistique_classe_pdf(request, trimestre_id,classe_id, ):
+def statistique_classe_pdf(request, trimestre_id,classe_id):
     classe = get_object_or_404(Classes, pk=classe_id)
     trimestre_selected = get_object_or_404(Periode, pk=classe_id)
     annee_scolaire = SessionYearModel.get_current_session()
