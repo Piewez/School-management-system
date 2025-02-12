@@ -108,6 +108,7 @@ WSGI_APPLICATION = 'student_management_system.wsgi.application'
 # }
 
 
+
 # Default to SQLite for local development
 DATABASES = {
     'default': {
