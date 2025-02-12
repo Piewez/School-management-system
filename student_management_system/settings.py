@@ -58,7 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     #===Enable Only Making Project Live on Heroku==
-     #'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -164,6 +164,8 @@ AUTHENTICATION_BACKENDS=['student_management_app.EmailBackEnd.EmailBackEnd']
 
 EMAIL_BACKEND="django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH=os.path.join(BASE_DIR,"sent_mails")
+
+CSRF_TRUSTED_ORIGINS= [""]
 
 # EMAIL_HOST="smtp.gmail.com"
 # EMAIl_PORT=587
