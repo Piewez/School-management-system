@@ -195,3 +195,5 @@ Run Project python runserver
 <h1>Extending Project Parts</h1>
 <h2>Add Student Results From Professeur Panel</h2>
 <img src="https://raw.githubusercontent.com/hackstarsj/student_management_system_part_11/master/screenshots/add_result2.PNG"  alt="Add Results">
+#   S c h o o l - m a n a g e m e n t - s y s t e m  
+ 
