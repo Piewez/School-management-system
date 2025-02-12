@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-import django_heroku
+#import django_heroku
 import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -29,7 +29,8 @@ DEBUG = True
 
 #HEROKU LIVE PROJECT LINK
 #ALLOWED_HOSTS = ["studentmanagementsystem22.herokuapp.com"]
-ALLOWED_HOSTS = ["https://school-manage-system-123-c2882c314932.herokuapp.com/", '127.0.0.1']
+#ALLOWED_HOSTS = ["https://school-manage-system-123-c2882c314932.herokuapp.com/", '127.0.0.1']
+ALLOWED_HOSTS = ["*"]
 
 MEDIA_URL="/media/"
 MEDIA_ROOT=os.path.join(BASE_DIR,"media")
@@ -110,16 +111,21 @@ WSGI_APPLICATION = 'student_management_system.wsgi.application'
 
 
 # Default to SQLite for local development
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
-# If DATABASE_URL environment variable is set, use it (for Heroku)
-if os.getenv('DATABASE_URL'):
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# # If DATABASE_URL environment variable is set, use it (for Heroku)
+# if os.getenv('DATABASE_URL'):
+#     DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+
+
+DATABASES = {
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+}
 
 
 
@@ -185,7 +191,7 @@ CSRF_TRUSTED_ORIGINS= [""]
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-django_heroku.settings(locals())
+#django_heroku.settings(locals())
 
 # LOGGING = {
 #     'version': 1,
